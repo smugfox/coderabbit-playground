@@ -1,0 +1,56 @@
+# CodeRabbit configuration
+# Experiment: same diff, assertive profile + explicit path instructions,
+# to measure how much coverage is config-dependent vs model-dependent.
+
+language: en-US
+tone_instructions: "Be direct and specific. Lead with impact, not etiquette."
+
+reviews:
+  profile: assertive
+  high_level_summary: true
+  sequence_diagrams: true
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+
+  path_instructions:
+    - path: "src/**/*.tsx"
+      instructions: >-
+        React components. Flag every accessibility defect individually, including
+        images without alt text and form controls without an associated label or
+        aria-label. Flag useEffect hooks that perform async work without cleanup or
+        an AbortController, and any effect whose dependency array omits a value it
+        closes over. Flag array index used as a React key. Flag O(n^2) lookups
+        performed inside render.
+    - path: "src/server/**"
+      instructions: >-
+        Server code. Flag any promise that is not awaited, especially database
+        writes whose result is discarded. Flag N+1 query patterns and sequential
+        awaits inside loops. Flag SELECT * and untyped any[] return values.
+    - path: "src/features/**/api.ts"
+      instructions: >-
+        Network boundary. Flag empty catch blocks and swallowed errors, missing
+        res.ok checks before parsing JSON, `any` on request/response payloads,
+        and any transmission of PII without an explicit consent gate.
+
+  tools:
+    eslint:
+      enabled: true
+    semgrep:
+      enabled: true
+    gitleaks:
+      enabled: true
+
+  finishing_touches:
+    docstrings:
+      enabled: true
+    unit_tests:
+      enabled: true
+
+
+knowledge_base:
+  web_search:
+    enabled: true
+
+chat:
+  auto_reply: true
